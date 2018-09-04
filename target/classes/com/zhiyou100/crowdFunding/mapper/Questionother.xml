@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.IQuestionotherMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Questionother" id="QuestionotherMap">
+		<id column="questionotherid" property="questionotherid" />
+		<result column="questionid" property="questionid" />
+		<result column="questionothername" property="questionothername" />
+		<result column="questionanswer" property="questionanswer" />
+		<result column="questiondate" property="questiondate" />
+	</resultMap>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Questionother"
+		keyProperty="questionotherid" useGeneratedKeys="true">
+		insert into Questionother
+		(questionid,questionothername,questionanswer,questiondate) values
+		(#{questionid},#{questionothername},#{questionanswer},#{questiondate});
+	</insert>
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Questionother">
+		update Questionother set
+		questionid=#{questionid},questionothername=#{questionothername},questionanswer=#{questionanswer}
+		where questionotherid=#{questionotherid};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from Questionother
+		where questionotherid=#{questionotherid};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Questionother where questionotherid in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="QuestionotherMap">
+		select * from Questionother where questionotherid =
+		#{questionotherid};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="QuestionotherMap">
+		select * from Questionother LIMIT
+		#{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Questionother;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from Questionother
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="QuestionotherMap">
+		select * from Questionother
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize}
+	</select>
+
+</mapper>

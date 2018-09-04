@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiyou100.crowdFunding.mapper.ILogsMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Logs" id="LogsMap">
+		<id column="log_id" property="logId" />
+		<result column="log_us_id" property="logUsId" />
+		<result column="log_content" property="logContent" />
+	</resultMap>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Logs"
+		keyProperty="logId" useGeneratedKeys="true">
+		insert into Logs
+		(log_us_id,log_content) values (#{logUsId},#{logContent});
+	</insert>
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Logs">
+		update Logs set
+		log_us_id=#{logUsId},log_content=#{logContent}
+		where log_id=#{logId};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from Logs
+		where
+		log_id=#{logId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Logs where log_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="LogsMap">
+		select * from Logs where log_id=#{logId};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="LogsMap">
+		select * from Logs LIMIT
+		#{start}
+		, #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Logs;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from Logs
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="LogsMap">
+		select * from Logs
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize}
+	</select>
+
+</mapper>

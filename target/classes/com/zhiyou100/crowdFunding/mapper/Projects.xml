@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.IProjectsMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Projects" id="ProjectsMap">
+		<id column="ps_id" property="psId" />
+		<result column="ps_us_id" property="psUsId" />
+		<result column="ps_cust_name" property="psCustName" />
+		<result column="ps_cust_phone" property="psCustPhone" />
+		<result column="ps_cust_address" property="psCustAddress" />
+		<result column="ps_pst_id" property="psPstId" />
+		<result column="ps_file" property="psFile" />
+		<result column="ps_name" property="psName" />
+		<result column="ps_goal" property="psGoal" />
+		<result column="ps_address" property="psAddress" />
+		<result column="ps_money" property="psMoney" />
+		<result column="ps_days" property="psDays" />
+		<result column="ps_video" property="psVideo" />
+		<result column="ps_story" property="psStory" />
+		<result column="ps_support" property="psSupport" />
+		<result column="ps_repay" property="psRepay" />
+		<result column="ps_aboutme" property="psAboutme" />
+		<result column="ps_type" property="psType" />
+		<result column="ps_starttime" property="psStarttime" />
+		<result column="ps_endtime" property="psEndtime" />
+		<result column="ps_getmoney" property="psGetmoney" />
+		<result column="ps_getpeople" property="psGetpeople" />
+		<result column="ps_auditor" property="psAuditor" />
+		<!-- 一对一关系映射 -->
+		<association property="us" javaType="User">
+			<id column="us_id" property="usId" />
+			<result column="us_name" property="usName" />
+			<result column="us_email" property="usEmail" />
+			<result column="us_phone" property="usPhone" />
+		</association>
+		<association property="pst" javaType="Projectstype">
+			<id column="pst_id" property="pstId" />
+			<result column="pst_name" property="pstName" />
+		</association>
+		<association property="admin" javaType="Admin">
+			<id column="admin_id" property="adminId" />
+			<result column="admin_name" property="adminName" />
+		</association>
+	</resultMap>
+	
+	<!--多条件模糊查询语句 -->
+	<select id="findByTerm" parameterType="java.util.Map" resultMap="ProjectsMap">
+	select  ps.* ,us.us_name ,pst.pst_name  from projects ps 
+	left join user us on us.us_id=ps.ps_us_id
+	left join projectstype pst on pst.pst_id = ps.ps_pst_id
+	where ps.ps_name like #{psName} and ps.ps_type like #{psType} and pst.pst_name like #{pstName} and us.us_name like #{usName}
+	limit  #{start} , #{lineSize};
+	</select>
+
+	<!-- 多条件查询模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long" parameterType="java.util.Map">
+		select count(0) from Projects ps
+		left join user us on us.us_id=ps.ps_us_id
+		left join projectstype pst on pst.pst_id = ps.ps_pst_id
+		where ps.ps_name like #{psName} and ps.ps_type like #{psType} and pst.pst_name like #{pstName} and us.us_name like #{usName};
+	</select>	
+	<!-- 审核总数量 -->
+	<select id="getCountByReview" resultType="java.lang.Long" parameterType="java.util.Map">
+	select count(0) from Projects where ps_type=0;
+	</select>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Projects"
+		keyProperty="psId" useGeneratedKeys="true">
+		insert into Projects
+		(ps_us_id,ps_cust_name,ps_cust_phone,ps_cust_address,ps_pst_id,ps_file,ps_name,ps_goal,ps_address,ps_money,ps_days,ps_video,ps_story,ps_support,ps_repay,ps_aboutme,ps_type,ps_starttime,ps_endtime,ps_getmoney,ps_getpeople)
+		values
+		(#{psUsId},#{psCustName},#{psCustPhone},#{psCustAddress},#{psPstId},#{psFile},#{psName},#{psGoal},#{psAddress},#{psMoney},#{psDays},#{psVideo},#{psStory},#{psSupport},#{psRepay},#{psAboutme},#{psType},#{psStarttime},#{psEndtime},#{psGetmoney},#{psGetpeople});
+	</insert>
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Projects">
+		update Projects set
+		ps_us_id=#{psUsId},ps_cust_name=#{psCustName},ps_cust_phone=#{psCustPhone},ps_cust_address=#{psCustAddress},ps_pst_id=#{psPstId},
+		ps_file=#{psFile},ps_name=#{psName},ps_goal=#{psGoal},ps_address=#{psAddress},ps_money=#{psMoney},ps_days=#{psDays},ps_video=#{psVideo},
+		ps_story=#{psStory},ps_support=#{psSupport},ps_repay=#{psRepay},ps_aboutme=#{psAboutme},ps_type=#{psType},ps_starttime=#{psStarttime},
+		ps_endtime=#{psEndtime},ps_getmoney=#{psGetmoney},ps_getpeople=#{psGetpeople},ps_auditor=#{psAuditor}
+		where ps_id=#{psId};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from Projects
+		where
+		ps_id=#{psId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Projects where ps_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="ProjectsMap">
+		select ps.*,u.us_id,u.us_name,pst.pst_name, admin.admin_name
+		from projects ps
+		left join user u on u.us_id = ps.ps_us_id
+		left join
+		projectstype pst on pst.pst_id = ps.ps_pst_id
+		left join admin admin on
+		admin.admin_id = ps.ps_auditor
+		where ps.ps_id=#{psId};
+	</select>
+	<!-- 通过邮箱或者手机号进行查询项目 -->
+	<select id="findByEmail" parameterType="java.lang.String" resultMap="ProjectsMap">
+		select ps.*,u.us_id,u.us_name,pst.pst_name, admin.admin_name
+		from projects ps
+		left join user u on u.us_id = ps.ps_us_id
+		left join
+		projectstype pst on pst.pst_id = ps.ps_pst_id
+		left join admin admin on
+		admin.admin_id = ps.ps_auditor
+		where u.us_email=#{usEmail} or u.us_phone=#{usPhone};
+	</select>
+	<!-- 通过邮箱或者手机号查询正在众筹中的项目 -->
+	<select id="findByType" parameterType="java.lang.String" resultMap="ProjectsMap">
+		select ps.*,u.us_id,u.us_name,pst.pst_name, admin.admin_name
+		from projects ps
+		left join user u on u.us_id = ps.ps_us_id
+		left join
+		projectstype pst on pst.pst_id = ps.ps_pst_id
+		left join admin admin on
+		admin.admin_id = ps.ps_auditor
+		where ps.ps_type=3 and (u.us_email=#{usEmail} or u.us_phone=#{usPhone});
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="ProjectsMap">
+		select
+		ps.*,u.us_name,pst.pst_name from
+		projects ps
+		left join user u on
+		u.us_id=ps.ps_us_id
+		left join projectstype pst on
+		pst.pst_id=ps.ps_pst_id
+		LIMIT #{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Projects;
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="ProjectsMap">
+		
+		 select * from Projects
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if> 
+		LIMIT #{start} , #{lineSize}
+	</select>
+	<!-- 审核 -->
+	<update id="doUpdateByReview" parameterType="Projects">
+		update Projects set
+		ps_auditor=#{psAuditor},ps_type=#{psType},ps_starttime=#{psStarttime},ps_endtime=#{psEndtime}
+		where ps_id=#{psId};
+	</update>
+	<!-- 发布项目时插入项目信息 -->
+	<update id="doUpdateProjects" parameterType="Projects">
+	update Projects set
+	ps_file=#{psFile},ps_name=#{psName},ps_goal=#{psGoal},ps_address=#{psAddress},ps_money=#{psMoney},ps_days=#{psDays}
+	where ps_id=#{psId};
+	</update>
+	
+	<!-- 发布项目时插入项目详情信息 -->
+	<update id="doUpdateProjectsDetail" parameterType="Projects">
+	update Projects set
+	ps_video=#{psVideo},ps_story=#{psStory},ps_support=#{psSupport},ps_repay=#{psRepay},ps_aboutme=#{psAboutme}
+	where ps_id=#{psId};
+	</update>
+	
+</mapper>

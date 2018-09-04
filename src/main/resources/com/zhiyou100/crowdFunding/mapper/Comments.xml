@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.ICommentsMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Comments" id="CommentsMap">
+		<id column="cm_id" property="cmId" />
+		<result column="cm_us_id" property="cmUsId" />
+		<result column="cm_ps_id" property="cmPsId" />
+		<result column="cm_content" property="cmContent" />
+		<result column="cm_time" property="cmTime" />
+	</resultMap>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Comments"
+		keyProperty="cmId" useGeneratedKeys="true">
+		insert into Comments
+		(cm_us_id,cm_ps_id,cm_content,cm_time) values
+		(#{cmUsId},#{cmPsId},#{cmContent},#{cmTime});
+	</insert>
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Comments">
+		update Comments set
+		cm_us_id=#{cmUsId},cm_ps_id=#{cmPsId},cm_content=#{cmContent},cm_time=#{cmTime}
+		where cm_id=#{cmId};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+	delete from Comments
+	where
+	cm_id=#{cmId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Comments where cm_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="CommentsMap">
+		select * from Comments where cm_id=#{cmId};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="CommentsMap">
+		select * from Comments LIMIT
+		#{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Comments;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from Comments
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="CommentsMap">
+		select * from Comments
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize}
+	</select>
+	<!--通过所评论的项目id和用户的id进行查询  -->
+	<select id="findByPstidAndUsId" parameterType="java.util.Map" resultMap="CommentsMap">
+		select * from comments where cm_us_id = #{cmUsId} and cm_ps_id = #{cmPsId};
+	</select>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context       
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        ">
+	<!-- Spring扫描注解 -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.zhiyou100" />
+		<!-- base-package="com.zhiyou100.crowdFunding.controller" /> -->
+		
+
+	<!-- Springmvc注解配置 -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler /><!-- 处理请求的servlet -->
+
+	<!-- 安全访问路径资源匹配处理 -->
+	<!-- 配置视图解析器：如何把 handler 方法返回值解析为实际的物理视图 -->
+	<!-- 通过 prefix + returnVal + suffix 这样的方式得到实际的物理视图，然后做转发操作 -->
+	<bean id="viewResovler"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 匹配前缀 -->
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<!-- 匹配后缀 -->
+		<property name="suffix" value="" />
+		<!-- <property name="suffix" value=".jsp" /> -->
+	</bean>
+	
+	
+	 <!--json格式数据转换的配置  -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"
+        p:ignoreDefaultModelOnRedirect="true">
+        <property name="messageConverters">
+            <list>
+                <bean
+             class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 文件上传配置支持 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<!-- 设置每次上传文件的最大限制 -->
+    	<property name="maxUploadSize" value="5242880"/>
+    	<!-- 设置每次上传文件占用的内存大小 -->
+    	<property name="maxInMemorySize" value="4096"></property>
+    	<!-- 编码 -->
+    	<property name="defaultEncoding" value="UTF-8"></property>	
+    </bean>
+    
+    <!-- 拦截器 -->
+    <mvc:interceptors>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/publish/front/*.action"/> 
+    		<bean class="com.zhiyou100.crowdFunding.utils.ProjectsPublishInInterceptor"></bean>
+    	</mvc:interceptor>
+    </mvc:interceptors>
+</beans>

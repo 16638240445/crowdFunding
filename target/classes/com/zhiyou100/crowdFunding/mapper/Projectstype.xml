@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.IProjectstypeMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Projectstype" id="ProjectstypeMap">
+		<id column="pst_id" property="pstId" />
+		<result column="pst_name" property="pstName" />
+		<result column="pst_desc" property="pstDesc" />
+		<result column="pst_stardate" property="pstStardate" />
+		<result column="pst_type" property="pstType" />
+	</resultMap>
+	<!-- 查找全部类型不分页 findAllTypes-->
+	<select id="findAllTypes" resultMap="ProjectstypeMap">
+		select * from Projectstype ;
+	</select>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Projectstype"
+		keyProperty="pstId" useGeneratedKeys="true">
+		insert into
+		Projectstype
+		(pst_name,pst_desc,pst_stardate,pst_type)
+		values(#{pstName},#{pstDesc},#{pstStardate},#{pstType});
+	</insert>
+
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Projectstype">
+		update Projectstype set
+		pst_name=#{pstName},pst_desc=#{pstDesc},pst_stardate=#{pstStardate},pst_type=#{pstType}
+		where
+		pst_id=#{pstId};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from Projectstype
+		where
+		pst_id=#{pstId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Projectstype where pst_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="ProjectstypeMap">
+		select * from Projectstype where pst_id=#{pstId};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="ProjectstypeMap">
+		select * from Projectstype LIMIT
+		#{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Projectstype;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from Projectstype
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="ProjectstypeMap">
+		select * from Projectstype
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize};
+	</select>
+</mapper>

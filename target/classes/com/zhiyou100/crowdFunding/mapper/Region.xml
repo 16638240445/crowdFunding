@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiyou100.crowdFunding.mapper.IRegionMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+	
+	<!-- resultMap映射 -->
+	<resultMap type="Region" id="RegionMap">
+		<id column="REGION_ID" property="regionId" />
+		<result column="REGION_CODE" property="regionCode" />
+		<result column="REGION_NAME" property="regionName" />
+		<result column="PARENT_ID" property="parentId" />
+		<result column="REGION_LEVEL" property="regionLevel" />
+		<result column="REGION_ORDER" property="regionOrder" />
+		<result column="REGION_NAME_EN" property="regionNameEn" />
+		<result column="REGION_SHORTNAME_EN" property="regionShortnameEn" />
+	</resultMap>
+	<!-- 查询全部省份 -->
+	<select id="findAllProvince" resultMap="RegionMap">
+	select * from region where PARENT_ID = '1';
+	</select>
+	<!-- 查询本省的全部城市 -->
+	<select id="findProvinceCity" parameterType="java.lang.Integer" resultMap="RegionMap">
+	select * from region where PARENT_ID = #{regionId};
+	</select>
+</mapper>

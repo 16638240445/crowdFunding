@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.IAdminMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Admin" id="AdminMap">
+		<id column="admin_id" property="adminId" />
+		<result column="admin_name" property="adminName" />
+		<result column="admin_password" property="adminPassword" />
+		<result column="gender" property="gender" />
+		<result column="admin_account_name" property="adminAccountName" />
+	</resultMap>
+	<!-- 添加管理员的sql语句 -->
+	<insert id="doCreate" parameterType="Admin">
+		insert into
+		admin(admin_name,admin_password,gender,admin_account_name)
+		values(#{adminName},#{adminPassword},#{gender},#{adminAccountName});
+	</insert>
+	<!-- 更改管理员的sql语句 -->
+	<update id="doUpdate" parameterType="Admin">
+		update admin set admin_name
+		=
+		#{adminName}, admin_password = #{adminPassword} , gender = #{gender}
+		,
+		admin_account_name = #{adminAccountName} where admin_id=#{adminId};
+	</update>
+	<!-- 通过id删除管理员的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from admin where
+		admin_id=#{adminId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from admin where admin_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="AdminMap">
+		select * from admin where admin_id = #{adminId};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="AdminMap">
+		select * from admin LIMIT
+		#{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		admin;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from admin
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="AdminMap">
+		select * from admin
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize}
+	</select>
+	<!-- 通过账号密码查询的sql语句 -->
+	<select id="findByLogin" parameterType="java.util.Map"
+		resultMap="AdminMap">
+		select * from admin where admin_account_name = #{adminAccountName} and admin_password = #{adminPassword};
+	</select>
+
+</mapper>

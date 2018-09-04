@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 启动二级缓存 意味着本项目所有的查询都会默认采用二级缓存 -->
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	<!-- 映射类别名 -->
+	<typeAliases>
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Admin"
+			alias="Admin" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.User"
+			alias="User" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Questionall"
+			alias="Questionall" />
+		<typeAlias
+			type="com.zhiyou100.crowdFunding.vo.Questionother"
+			alias="Questionother" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Projectstype"
+			alias="Projectstype" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Projects"
+			alias="Projects" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Funding"
+			alias="Funding" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Repay"
+			alias="Repay" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Letter"
+			alias="Letter" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Comments"
+			alias="Comments" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Logs"
+			alias="Logs" />
+		<typeAlias type="com.zhiyou100.crowdFunding.vo.Region"
+			alias="Region" />
+
+		<!-- <package name=""/> -->
+	</typeAliases>
+
+</configuration>

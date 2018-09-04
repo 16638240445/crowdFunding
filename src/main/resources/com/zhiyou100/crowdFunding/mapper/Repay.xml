@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.zhiyou100.crowdFunding.mapper.IRepayMapper">
+	<cache eviction="FIFO" flushInterval="10000" readOnly="true"
+		size="521" />
+
+	<!-- resultMap映射 -->
+	<resultMap type="Repay" id="RepayMap">
+		<id column="ry_id" property="ryId" />
+		<result column="ry_us_id" property="ryUsId" />
+		<result column="ry_type" property="ryType" />
+		<result column="ry_paymoney" property="ryPaymoney" />
+		<result column="ry_rule" property="ryRule" />
+		<result column="ry_content" property="ryContent" />
+		<result column="ry_number" property="ryNumber" />
+		<result column="ry_time" property="ryTime" />
+		<result column="ry_ps_id" property="ryPsId" />
+		<result column="ry_code" property="ryCode" />
+		<result column="ry_pic_url" property="ryPicUrl" />
+	</resultMap>
+	<!-- 添加的sql语句 -->
+	<insert id="doCreate" parameterType="Repay" keyProperty="ryId"
+		useGeneratedKeys="true">
+		insert into Repay
+		(ry_us_id,ry_type,ry_paymoney,ry_rule,ry_content,ry_number,ry_time,ry_ps_id,ry_code,ry_pic_url)
+		values
+		(#{ryUsId},#{ryType},#{ryPaymoney},#{ryRule},#{ryContent},#{ryNumber},#{ryTime},#{ryPsId},#{ryCode},#{ryPicUrl});
+	</insert>
+	<!-- 更改的sql语句 -->
+	<update id="doUpdate" parameterType="Repay">
+		update Repay set
+		ry_us_id=#{ryUsId},ry_type=#{ryType},ry_paymoney=#{ryPaymoney},ry_rule=#{ryRule},ry_content=#{ryContent},
+		ry_number=#{ryNumber},ry_time=#{ryTime},ry_ps_id=#{ryPsId},ry_code=#{ryCode},ry_pic_url=#{ryPicUrl}
+		where ry_id=#{ryId};
+	</update>
+	<!-- 通过id删除的sql语句 -->
+	<delete id="doRemove" parameterType="java.lang.Integer">
+		delete from Repay
+		where
+		ry_id=#{ryId};
+	</delete>
+	<!--通过id批量删除的sql语句 -->
+	<delete id="doRemoveBatch" parameterType="java.lang.Integer">
+		delete from Repay where ry_id in
+		<foreach item="ele" collection="collection" open="("
+			separator="," close=")">
+			#{ele}
+		</foreach>
+	</delete>
+	<!--通过id查询的sql语句 -->
+	<select id="findById" parameterType="java.lang.Integer"
+		resultMap="RepayMap">
+		select * from Repay where ry_id=#{ryId};
+	</select>
+	<!-- 查询全部并分页的sql语句 -->
+	<select id="findAll" resultMap="RepayMap">
+		select * from Repay LIMIT
+		#{start} , #{lineSize};
+	</select>
+	<!-- 查询全部数量的sql语句 -->
+	<select id="getAllCount" resultType="java.lang.Long">
+		select count(0) from
+		Repay;
+	</select>
+	<!-- 模糊查询数量 -->
+	<select id="getAllCountSplit" resultType="java.lang.Long">
+		select count(0) from Repay
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+	</select>
+	<!-- 模糊查询全部并分页的sql语句 -->
+	<select id="findAllSplit" parameterType="java.util.Map"
+		resultMap="RepayMap">
+		select * from Repay
+		<if test="column != null and keyword != null">
+			where ${column} like #{keyword}
+		</if>
+		LIMIT #{start} , #{lineSize}
+	</select>
+
+</mapper>
